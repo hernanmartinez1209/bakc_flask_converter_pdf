@@ -1,22 +1,25 @@
-# Usamos una imagen base de Python
-FROM python:3.9-slim
+# Imagen base con LibreOffice y Python
+FROM debian:bullseye-slim
 
-# Instalar LibreOffice (y otras dependencias necesarias)
+# Instala LibreOffice y dependencias
 RUN apt-get update && \
-    apt-get install -y libreoffice libreoffice-common && \
-    apt-get clean
+    apt-get install -y libreoffice python3 python3-pip python3-dev python3-venv build-essential poppler-utils && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Establecer el directorio de trabajo dentro del contenedor
+# Crea y activa entorno virtual
 WORKDIR /app
-
-# Copiar los archivos de tu proyecto al contenedor
 COPY . /app
 
-# Instalar las dependencias de Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Instala dependencias Python
+RUN pip install --upgrade pip
+RUN pip install flask flask-cors pillow
 
-# Exponer el puerto 5000 (el puerto predeterminado de Flask)
+# Define variable de entorno para LibreOffice
+ENV soffice_path=/usr/bin/libreoffice
+
+# Puerto que expone Flask
 EXPOSE 5000
 
-# Comando para ejecutar la API Flask
-CMD ["python", "app.py"]
+# Comando para ejecutar la app
+CMD ["python3", "app.py"]

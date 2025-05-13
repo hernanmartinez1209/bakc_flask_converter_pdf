@@ -13,9 +13,10 @@ OUTPUT_FOLDER = 'output'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-soffice_path = "C:/Program Files/LibreOffice/program/soffice.exe"
+soffice_path = os.environ.get('soffice_path', '/usr/bin/libreoffice')
 
 ALLOWED_EXTENSIONS = {'.docx', '.xlsx', '.xls', '.png', '.jpg', '.jpeg'}
+
 
 def convert_with_libreoffice(input_path, output_folder):
     try:
