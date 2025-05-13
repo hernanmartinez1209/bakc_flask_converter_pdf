@@ -1,25 +1,20 @@
-# Imagen base con LibreOffice y Python
-FROM debian:bullseye-slim
+FROM python:3.10-slim
 
 # Instala LibreOffice y dependencias
 RUN apt-get update && \
-    apt-get install -y libreoffice python3 python3-pip python3-dev python3-venv build-essential poppler-utils && \
+    apt-get install -y libreoffice && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Crea y activa entorno virtual
 WORKDIR /app
 COPY . /app
 
 # Instala dependencias Python
 RUN pip install --upgrade pip
-RUN pip install flask flask-cors pillow
+RUN pip install flask flask-cors pillow gunicorn
 
-# Define variable de entorno para LibreOffice
-ENV soffice_path=/usr/bin/libreoffice
-
-# Puerto que expone Flask
+# Expone el puerto 5000
 EXPOSE 5000
 
-# Comando para ejecutar la app
-CMD ["python3", "app.py"]
+# Usa Gunicorn como servidor de producción
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
